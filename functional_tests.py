@@ -44,7 +44,8 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
-            any(row.text == '1. Buy a cup of coffee' for row in rows))
+            any(row.text == '1. Buy a cup of coffee' for row in rows),
+            "Новый элемент списка не появился в таблице")
         self.fail('Закончить тест')
 
 #Текстовое поле по-прежнему приглашает добавить еще один элемент

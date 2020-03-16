@@ -14,11 +14,6 @@ class HomePageTest(TestCase):
         self.assertEqual(found.func, home_page)
 
     def test_home_page_returns_correct_html(self):
-        '''тест: домашняя страница возвращает правильный html'''
+        '''тест: домашняя страница использует нужный шаблон'''
         response = self.client.get('/')
-        html = response.content.decode('utf8')
-        self.assertTrue(html.startswith('<html>'))
-        self.assertIn('<title>To-Do lists</title>', html)
-        self.assertTrue(html.endswith('</html>'))
-
-        self.assertTemplateUsed(response, 'lists/home1.html')
+        self.assertTemplateUsed(response, 'lists/home.html')
