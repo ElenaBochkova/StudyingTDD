@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
 import unittest
 
 class NewVisitorTest(unittest.TestCase):
@@ -20,14 +22,30 @@ class NewVisitorTest(unittest.TestCase):
 
         #Проверяем, что заголовок и шапка страницы говорят о списках неотложных дел
         self.assertIn('To-Do', self.browser.title)
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('To-Do', header_text)
+      
+        #нам сразу же предлагается ввести элемент списка
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertEqual(
+            inputbox.get_attribute('placeholder'),
+            'Enter a to-do item'
+            )
+
+        #Мы набираем в текстовом поле "Купить кофе" (нельзя работать без кофе!)
+
+        inputbox.send_keys('Buy a cup of coffee')
+        
+        #Когда мы нажимаем enter, страница обновляется, и теперь страница содержит
+        #"1: Купить кофе" в качестве элемента списка
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
+
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(row.text == '1. Buy a cup of coffee' for row in rows))
         self.fail('Закончить тест')
-
-#нам сразу же предлагается ввести элемент списка
-
-#Мы набираем в текстовом поле "Купить кофе" (нельзя работать без кофе!)
-
-#Когда мы нажимаем enter, страница обновляется, и теперь страница содержит
-#"1: Купить кофе" в качестве элемента списка
 
 #Текстовое поле по-прежнему приглашает добавить еще один элемент
 #Мы вводим "выпить кофе" (не зря же покупали!)
@@ -41,6 +59,7 @@ class NewVisitorTest(unittest.TestCase):
 #Мы посещаем этот URL-адрес - список по-прежнему там
 
 #На этом можно завершать тест
+
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
