@@ -6,7 +6,7 @@ import time
 import unittest
 from lists.models import Item
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     """ Тест нового посетителя"""
     
     def setUp(self):
@@ -82,6 +82,49 @@ class NewVisitorTest(unittest.TestCase):
 #Мы посещаем этот URL-адрес - список по-прежнему там
 
 #На этом можно завершать тест
+
+    def test_multiple_users_can_start_lists_at_different_urls(self):
+        '''тест: многочисленные пользователи могут начать списки по разным url'''
+        #Начинаем новый список
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy a cup of coffee')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1. Buy a cup of coffee')
+
+        #Замечаем, что список имеет уникальный URL адрес
+        my_list_url = self.browser.current_url
+        self.assertRegex(my_list_url, '/lists/.+')
+
+        #Теперь новый пользователь, Френсис, приходит на сайт
+
+        ##Мы используем новый сеанс браузера, тем самым обеспечивая, чтобы
+        ##никакая предыдущая информация не прошла через данные cookie
+
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        #Френсис посещает домашнюю страницу. Нет никаких признаков списка
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy a cup of coffee', page_text)
+        self.assertNotIn('Drink the cup of coffee', page_text)
+
+        #Френсис начинает новый список, вводя новый элемент
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy a bottle of milk')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1. Buy a bottle of milk')
+
+        #Френсис получает уникальный URL адрес
+        frencis_list_url = self.browser.current_url
+        self.assertRegex(frencis_list_url, 'lists/.+')
+        self.assertNotEqual(frencis_list_url, my_list_url)
+
+        #Опять-таки, нет и следа первого списка
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy a cup of coffee', page_text)
+        self.assertIn('Buy a bottle of milk', page_text)
 
 
 if __name__ == '__main__':
