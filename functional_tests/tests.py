@@ -8,15 +8,19 @@ from lists.models import Item
 
 class NewVisitorTest(LiveServerTestCase):
     """ Тест нового посетителя"""
-    
+
+    def clear_items(self):
+        items = Item.objects.all()
+        for item in items:
+            item.delete()
+            
     def setUp(self):
+        self.clear_items()
         self.browser = webdriver.Firefox()
 
     def tearDown(self):
         """демонтаж """
-        items = Item.objects.all()
-        for item in items:
-            item.delete()
+        self.clear_items()
         self.browser.quit()
 
     def wait_for_row_in_list_table(self, row_text):
