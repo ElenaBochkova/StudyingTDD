@@ -43,7 +43,7 @@ class NewVisitorTest(LiveServerTestCase):
 
         #Теперь проверим, что наш сайт - это сайт со списком неотложных дел
         #открываем наш сайт
-        self.browser.get('http:\\localhost:8000')
+        self.browser.get(self.live_server_url)#'http:\\localhost:8000')
 
         #Проверяем, что заголовок и шапка страницы говорят о списках неотложных дел
         self.assertIn('To-Do', self.browser.title)
