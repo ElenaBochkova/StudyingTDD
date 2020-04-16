@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import time
 import unittest
+import os
 from lists.models import Item
 
 class NewVisitorTest(StaticLiveServerTestCase):
@@ -18,6 +19,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def setUp(self):
         self.clear_items()
         self.browser = webdriver.Firefox()
+        staging_server = os.environ.get('STAGING_SERVER')
+        if staging_server:
+            self.live_server_url = 'http://' + staging_server
 
     def tearDown(self):
         """демонтаж """
@@ -47,7 +51,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_new_item')
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width']/2,
-            512,
+            266,
             delta = 10
             )
         inputbox.send_keys('testing')
@@ -56,7 +60,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_new_item')
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width']/2,
-            512,
+            266,
             delta = 10
             )
 
